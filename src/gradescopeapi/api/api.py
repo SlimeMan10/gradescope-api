@@ -2,6 +2,9 @@ from datetime import datetime
 
 from fastapi import Depends, FastAPI, HTTPException, status
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from gradescopeapi._config.config import FileUploadModel, LoginRequestModel
 from gradescopeapi.classes.account import Account
 from gradescopeapi.classes.assignments import Assignment, update_assignment_date
@@ -12,6 +15,10 @@ from gradescopeapi.classes.member import Member
 from gradescopeapi.classes.upload import upload_assignment
 
 app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello World"}
 
 # Create instance of GSConnection, to be used where needed
 connection = GSConnection()
