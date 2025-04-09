@@ -1,13 +1,14 @@
 "use strict";
 (function() {
 
-    window.addEventListener('load', init);
+    window.addEventListener('DOMContentLoaded', init);
 
     function init() {
         const loginButton = document.querySelector('#auth-form button');
         if (loginButton) {
             console.log("inside the loginButton")
             loginButton.onclick = function(event) {
+                event.preventDefault();
                 console.log("preventDefault() called via onclick");
                 login();
             };
@@ -63,7 +64,7 @@
         try {
             const url = "http://localhost:8000";
             const request = await fetch(url + "/courses", {
-                method: "GET",
+                method: "POST",
             })
             if (!request.ok) {
                 const errorMessage = await request.text();
