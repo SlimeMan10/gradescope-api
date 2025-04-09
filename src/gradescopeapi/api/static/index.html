@@ -3,29 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gradescope API Login</title>
+    <title>Assignment Dashboard</title>
+    <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
-    <div id="auth-form">
-        <h1>Login to Gradescope API</h1>
-        <form id="login-form">
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Log In</button>
-            <div id="error-message" class="error" style="display:none;"></div>
-        </form>
-    </div>
-    <div id="classes">
-        <div id="p">
-            
+    <!-- Login Form -->
+    <div class="container" id="login-container">
+        <div class="login-container">
+            <h2>Login to Dashboard</h2>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="remember-me">
+                    <label for="remember-me">Remember me</label>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+            </form>
         </div>
     </div>
-    <script src="/static/index.js"></script>
+
+    <!-- Dashboard - Hidden Initially -->
+    <div class="dashboard-container" id="dashboard-container">
+        <!-- Header with Logout -->
+        <div class="dashboard-header">
+            <h1>Your Assignments</h1>
+            <button id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+        
+        <!-- Submission Status Donut Chart -->
+        <div class="status-section">
+            <div class="donut-chart-container">
+                <div class="donut-chart">
+                    <div class="donut-fill">
+                        <div class="donut-content">
+                            <h2 id="submission-rate">0%</h2>
+                            <p id="submission-stats">0/0</p>
+                            <p>Complete</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="tab">
+                <i class="icon-announce"></i>
+            </div>
+            <div class="tab active">
+                <i class="icon-assignment"></i>
+            </div>
+            <div class="tab">
+                <i class="icon-check"></i>
+            </div>
+            <div class="tab-indicator"></div>
+        </div>
+        
+        <!-- Week Navigation -->
+        <div class="week-navigation">
+            <button id="prev-week" class="week-nav-btn disabled">
+                <i class="icon-left">←</i>
+            </button>
+            <h2 id="week-title">This Week</h2>
+            <button id="next-week" class="week-nav-btn">
+                <i class="icon-right">→</i>
+            </button>
+        </div>
+        
+        <!-- Upcoming Assignments Section -->
+        <div class="assignments-section">
+            <h3 id="due-status">due Tomorrow</h3>
+            <div id="missing-assignments" class="assignment-list">
+                <!-- Assignment items will be dynamically added here -->
+                <div class="assignment-item">
+                    <p>Loading assignments...</p>
+                </div>
+            </div>
+            
+            <!-- New Task Button -->
+            <div class="new-task-button">
+                <i class="icon-plus"></i>
+                <span>New Task</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/index.js"></script>
 </body>
 </html>
