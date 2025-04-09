@@ -1,9 +1,11 @@
 from datetime import datetime
-
 from fastapi import Depends, FastAPI, HTTPException, status
-
-import sys
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import os
+import sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from gradescopeapi._config.config import FileUploadModel, LoginRequestModel
 from gradescopeapi.classes.account import Account
@@ -14,15 +16,60 @@ from gradescopeapi.classes.extensions import get_extensions, update_student_exte
 from gradescopeapi.classes.member import Member
 from gradescopeapi.classes.upload import upload_assignment
 
+# Create app FIRST - before using it
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello World"}
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Get the absolute path to the current directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+static_dir = os.path.join(current_dir, "static")
+
+# Create static directory if it doesn't exist
+os.makedirs(static_dir, exist_ok=True)
+
+# Mount static files with absolute path - only do this ONCE
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Create instance of GSConnection, to be used where needed
 connection = GSConnection()
+account = None
 
+# Root route to serve our HTML file - only define this ONCE
+@app.get("/")
+def read_root():
+    return FileResponse(os.path.join(static_dir, "index.html"))
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Create a static directory if it doesn't exist
+os.makedirs("static", exist_ok=True)
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Root route to serve our HTML file
+@app.get("/")
+def read_root():
+    return FileResponse("static/index.html")
+
+# Create instance of GSConnection, to be used where needed
+connection = GSConnection()
+account = None
 
 def get_gs_connection():
     """
@@ -56,17 +103,6 @@ def get_account():
             methods for interacting with the user's courses and assignments.
     """
     return Account(session=get_gs_connection_session)
-
-
-# Create instance of GSConnection, to be used where needed
-connection = GSConnection()
-
-account = None
-
-
-@app.get("/")
-def root():
-    return {"message": "Hello World"}
 
 
 @app.post("/login", name="login")

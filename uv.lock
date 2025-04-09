@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.10"
 
 [[package]]
@@ -227,7 +228,7 @@ wheels = [
 
 [[package]]
 name = "gradescopeapi"
-version = "1.4.0"
+version = "1.4.1"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -243,6 +244,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "coverage" },
+    { name = "gradescopeapi" },
     { name = "mdformat" },
     { name = "mdformat-footnote" },
     { name = "mdformat-frontmatter" },
@@ -268,6 +270,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "coverage", specifier = ">=7.6.10" },
+    { name = "gradescopeapi", editable = "." },
     { name = "mdformat", specifier = ">=0.7.21" },
     { name = "mdformat-footnote", specifier = ">=0.1.1" },
     { name = "mdformat-frontmatter", specifier = ">=2.0.8" },

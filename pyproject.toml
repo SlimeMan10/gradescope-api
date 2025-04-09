@@ -15,6 +15,7 @@ dev = [
     "pre-commit>=3.7.0",
     "ruff>=0.4.3",
     "rust-just>=1.39.0",
+    "gradescopeapi",
 ]
 
 [project]
@@ -58,3 +59,6 @@ text = "MIT"
 Homepage = "https://github.com/nyuoss/gradescope-api"
 Issues = "https://github.com/nyuoss/gradescope-api/issues"
 Repository = "https://github.com/nyuoss/gradescope-api"
+
+[tool.uv.sources]
+gradescopeapi = { workspace = true }

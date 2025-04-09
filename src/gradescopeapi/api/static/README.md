@@ -1,0 +1,1 @@
+to access the static part just run (http://localhost:8000)
