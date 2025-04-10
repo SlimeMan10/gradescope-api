@@ -1,3 +1,3 @@
-const url = "http://localhost:8000/"; // Added the missing slash
+const url = "http://localhost:8000/api";
 
 export default url;

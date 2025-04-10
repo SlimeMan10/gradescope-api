@@ -7,7 +7,6 @@ interface LoginResponse {
 }
 
 export default async function Login() {
-    // grab the values of the email and password
     try {
         const emailElement = id('email') as HTMLInputElement | null;
         const passwordElement = id('password') as HTMLInputElement | null;
@@ -16,21 +15,17 @@ export default async function Login() {
             throw new Error("Missing email or password elements");
         }
         
-        // Extract the input values, not the elements themselves
         const email = emailElement.value;
         const password = passwordElement.value;
         
-        // Add validation if needed
         if (!email || !password) {
             throw new Error("Email and password cannot be empty");
         }
         
-        // Login is a post request that requires both email and password
-
-        const response = await fetch(url + "login", {
+        const response = await fetch(`${url}/login`, {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'  // Added content type header
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 email,
@@ -39,17 +34,19 @@ export default async function Login() {
         });
         
         if (!response.ok) {
-            throw new Error(`Request failed with status ${response.status}`);
+            const errorData = await response.json().catch(() => null);
+            const errorMessage = errorData?.detail || `Request failed with status ${response.status}`;
+            throw new Error(errorMessage);
         }
 
         const data: LoginResponse = await response.json();
-        console.log(data); // Use the data or handle it as needed
+        
         if (data.status_code === 200 && data.message === "Login successful") {
             localStorage.setItem('isLoggedIn', 'true');
+            return data;
         } else {
             throw new Error("Login failed: " + data.message);
         }
-        return data; // It's usually good to return the data
         
     } catch (error) {
         console.error("Login error:", error);

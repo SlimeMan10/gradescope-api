@@ -20,5 +20,6 @@ export default interface assignmentResponse {
     late_due_date: Date | null,
     submissions_status: string,
     grade: number,
-    max_grade: number
+    max_grade: number,
+    course_id?: string
 }

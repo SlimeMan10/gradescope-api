@@ -1,68 +1,334 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Weekly assignments calendar view */
+.weekly-assignments {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
+.week-navigation {
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.week-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+  padding: 0.5rem 1rem;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.week-nav-button {
+  background-color: transparent;
+  color: #2196f3;
+  border: 1px solid #2196f3;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+
+.week-nav-button:hover:not(:disabled) {
+  background-color: #2196f3;
+  color: white;
+}
+
+.week-nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #ccc;
+  color: #999;
+}
+
+.days-container {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.day-card {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  overflow: hidden;
+  min-height: 150px;
+  border: 1px solid #e5e5e5;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s;
+}
+
+.day-card.today {
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.day-card.has-assignments {
+  background-color: #fff;
+  border-color: #ddd;
+}
+
+.day-header {
+  padding: 0.5rem;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+}
+
+.day-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.day-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.day-assignments {
+  flex: 1;
+  padding: 0.5rem;
+  overflow-y: auto;
+}
+
+.no-assignments {
+  color: #999;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* Compact assignment items for the calendar view */
+.assignment-item.compact {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-left: 3px solid #f44336;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.assignment-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assignment-time {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.assignment-status .status-badge {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.3rem;
+}
+
+/* General styles (keeping existing styles) */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+/* Container styles */
+.login-container, .dashboard-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+/* Login form styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: background-color 0.2s;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+button:hover {
+  background-color: #0d8bf2;
+}
+
+button:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+}
+
+/* Header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.tab-button {
+  background-color: transparent;
+  color: #555;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  margin-right: 0.5rem;
+  border-bottom: 2px solid transparent;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tab-button.active {
+  color: #2196f3;
+  border-bottom-color: #2196f3;
+  background-color: rgba(33, 150, 243, 0.05);
+}
+
+.tab-button:hover {
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #f44336;
+  color: white;
+  border-radius: 50%;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+/* Error and notification styles */
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.loading, .no-data {
+  padding: 1rem;
+  text-align: center;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+/* Course list styles */
+.courses-list, .assignments-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.course-item, .assignment-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s;
+  background-color: white;
+}
+
+.course-item:hover, .assignment-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.course-header, .assignment-header {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.course-details, .assignment-details {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.course-name {
+  margin-bottom: 0.25rem;
+}
+
+.course-term {
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+
+.course-assignments, .course-grades {
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* Make the grid responsive */
+@media (max-width: 768px) {
+  .days-container {
+    grid-template-columns: repeat(1, 1fr);
   }
-  a:hover {
-    color: #747bff;
+  
+  .day-card {
+    min-height: auto;
   }
-  button {
-    background-color: #f9f9f9;
+  
+  .login-container, .dashboard-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  
+  .week-navigation {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }

@@ -50,10 +50,15 @@ If you do not want to use Python, you can host the API using the integrated Fast
 **Running the API Server Locally**
 
 To run the API server locally on your machine, open the project repository on your machine that you have cloned/forked, and:
-1. run: python3 -m venv venv
-1. run:source venv/bin/activate
-1. install dependencies: pip install gradescopeapi fastapi uvicorn
-1. install package in development mode: pip install -e .
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+in backend directory
+```
+pip install gradescopeapi fastapi uvicorn
+pip install -e .
+```
 1. run the program: uvicorn gradescopeapi.api.api:app --reload
 1. In a web browser, navigate to `localhost:8000/docs`, to see the auto-generated FastAPI docs
 
