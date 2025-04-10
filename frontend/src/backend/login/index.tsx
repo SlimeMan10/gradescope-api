@@ -1,4 +1,10 @@
-import { qsa, qs, id } from '../reusableDomFunctions/index';
+import { id } from '../reusableDomFunctions/index';
+import url from '../url';
+
+interface LoginResponse {
+    status_code: number;
+    message: string;
+}
 
 export default async function Login() {
     // grab the values of the email and password
@@ -20,7 +26,7 @@ export default async function Login() {
         }
         
         // Login is a post request that requires both email and password
-        const url = "http://localhost:8000/"; // Added the missing slash
+
         const response = await fetch(url + "login", {
             method: "POST",
             headers: {
@@ -35,17 +41,18 @@ export default async function Login() {
         if (!response.ok) {
             throw new Error(`Request failed with status ${response.status}`);
         }
-        
-        const data = await response.json();
+
+        const data: LoginResponse = await response.json();
         console.log(data); // Use the data or handle it as needed
+        if (data.status_code === 200 && data.message === "Login successful") {
+            localStorage.setItem('isLoggedIn', 'true');
+        } else {
+            throw new Error("Login failed: " + data.message);
+        }
         return data; // It's usually good to return the data
         
     } catch (error) {
         console.error("Login error:", error);
         throw error;
     }
-}
-
-export default storeLogin(
-
 }
