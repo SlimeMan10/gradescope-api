@@ -332,3 +332,163 @@ button:disabled {
     gap: 0.5rem;
   }
 }
+
+/* Weekly Assignments UI - Updated Design */
+.week-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.week-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f5f7fa;
+  border-radius: 8px;
+}
+
+.week-nav-button {
+  background: white;
+  border: 1px solid #e5e9f0;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.week-nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.week-title {
+  font-size: 18px;
+  margin: 0;
+  color: #374151;
+  font-weight: 600;
+}
+
+.assignment-tabs {
+  display: none;
+}
+
+.assignments-container {
+  padding: 0 16px;
+}
+
+.assignments-by-day {
+  margin-bottom: 24px;
+}
+
+.day-header {
+  font-size: 16px;
+  color: #374151;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e9f0;
+  font-weight: 500;
+}
+
+.today-marker {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.assignment-card {
+  display: flex;
+  background: white;
+  border: 1px solid #e5e9f0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.assignment-card:hover {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.course-badge {
+  width: 60px;
+  background: #3b5998;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.assignment-details {
+  padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.assignment-name {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #111827;
+  font-size: 18px;
+}
+
+.assignment-time {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 5px;
+}
+
+.assignment-countdown {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ef4444;
+  background-color: #fee2e2;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* Make the cards stack on smaller screens */
+@media (max-width: 768px) {
+  .assignment-card {
+    flex-direction: column;
+  }
+  
+  .course-badge {
+    width: 100%;
+    min-width: 100%;
+    padding: 10px;
+  }
+  
+  .assignment-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+.assignments-header {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
+
+.tasks-title {
+  font-size: 20px;
+  color: #374151;
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e9f0;
+}

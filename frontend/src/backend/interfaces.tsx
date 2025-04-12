@@ -1,4 +1,4 @@
-export default interface StudentCourse {
+export interface StudentCourse {
     name: string;
     full_name: string;
     semester: string;
@@ -7,12 +7,12 @@ export default interface StudentCourse {
     num_assignments: string;
 }
 
-export default interface AllCoursesResponse {
+export interface AllCoursesResponse {
     instructor: Record<string, any>; // or a more specific type if known
     student: Record<string, StudentCourse>; // keys are dynamic IDs like "460107"
 }
 
-export default interface assignmentResponse {
+export interface AssignmentResponse {
     assignment_id: number,
     name: string,
     release_date: Date,

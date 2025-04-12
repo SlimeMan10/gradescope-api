@@ -59,7 +59,7 @@ in backend directory
 pip install gradescopeapi fastapi uvicorn
 pip install -e .
 ```
-1. run the program: uvicorn gradescopeapi.api.api:app --reload
+1. run the program: uvicorn src.gradescopeapi.api.api:app --reload
 1. In a web browser, navigate to `localhost:8000/docs`, to see the auto-generated FastAPI docs
 
 Windows
