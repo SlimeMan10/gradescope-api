@@ -53,13 +53,10 @@ To run the API server locally on your machine, open the project repository on yo
 ```
 python3 -m venv venv
 source venv/bin/activate
-```
-in backend directory
-```
 pip install gradescopeapi fastapi uvicorn
 pip install -e .
+uvicorn gradescopeapi.api.api:app --reload
 ```
-1. run the program: uvicorn gradescopeapi.api.api:app --reload
 1. In a web browser, navigate to `localhost:8000/docs`, to see the auto-generated FastAPI docs
 
 Windows
