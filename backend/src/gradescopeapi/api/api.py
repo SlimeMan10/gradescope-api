@@ -25,7 +25,7 @@ API_PREFIX = "/api"
 # Add CORS middleware - ONLY ONCE
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Add your frontend URL here
+    allow_origins=["http://localhost:5173"],  # Vite's default port
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
