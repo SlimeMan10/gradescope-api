@@ -80,8 +80,8 @@ function getCurrentClasses({allClasses}: { allClasses: Record<string, courseData
     return curr_classes;
 }
 
-async function getMissingAssignments({setClasses, setError, controller}: 
-  { setClasses: (classes: missing_assignment[] | null) => void; setError: (error: any) => void; controller: AbortController })
+async function getMissingAssignments({setAssignments, setError, controller}: 
+  { setAssignments: (classes: missing_assignment[] | null) => void; setError: (error: any) => void; controller: AbortController })
   : Promise<void | null>
   {
     let allClasses: Record<string, courseData> | undefined;
@@ -104,7 +104,7 @@ async function getMissingAssignments({setClasses, setError, controller}:
     try {
         const missing_assignment = await getMissingAssignmentsHelper({setError, controller, currentClasses});
         console.log("Missing Assignments", missing_assignment);
-        setClasses(missing_assignment);
+        setAssignments(missing_assignment);
     } catch (error) {
         // taken care of in the helper
         return;

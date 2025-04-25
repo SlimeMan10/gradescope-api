@@ -1,1 +1,166 @@
 @import "tailwindcss";
+
+/* Custom animations for login component */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  
+  .animate-slideDown {
+    animation: slideDown 0.5s ease-out;
+  }
+  
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  /* Custom spinner animation */
+  @keyframes spinner {
+    to { transform: rotate(360deg); }
+  }
+  
+  .animate-spin {
+    animation: spinner 1s linear infinite;
+  }
+  
+  /* UW color theme */
+  .bg-uw-purple {
+    background-color: #4b2e83;
+  }
+  
+  .text-uw-purple {
+    color: #4b2e83;
+  }
+  
+  .border-uw-purple {
+    border-color: #4b2e83;
+  }
+  
+  .hover\:bg-uw-purple-light:hover {
+    background-color: #613cb0;
+  }
+  
+  /* Additional styles */
+  .form-container {
+    transition: all 0.3s ease;
+  }
+  
+  .form-container:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  .input-field {
+    transition: all 0.3s ease;
+  }
+  
+  .input-field:focus {
+    border-color: #4b2e83;
+    box-shadow: 0 0 0 2px rgba(75, 46, 131, 0.2);
+  }
+  
+  .login-button {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .login-button:hover {
+    transform: translateY(-2px);
+  }
+  
+  .button-text {
+    transition: opacity 0.2s ease;
+  }
+  
+  .spinner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Custom animations for the application */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  /* Animation classes */
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  
+  .animate-slideDown {
+    animation: slideDown 0.5s ease-out;
+  }
+  
+  .animate-slideUp {
+    animation: slideUp 0.5s ease-out;
+  }
+  
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s infinite;
+  }
+  
+  /* Hover animations for cards */
+  .card-hover-effect {
+    transition: all 0.3s ease;
+  }
+  
+  .card-hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Focus styles for accessibility */
+  .focus-accessible:focus {
+    outline: 2px solid #4b2e83;
+    outline-offset: 2px;
+  }

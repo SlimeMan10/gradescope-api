@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
 import sys
+import subprocess
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from gradescopeapi._config.config import FileUploadModel, LoginRequestModel
@@ -401,6 +402,34 @@ def upload_assignment_files(
            raise HTTPException(status_code=400, detail="Upload unsuccessful")
    except Exception as e:
        raise HTTPException(status_code=500, detail=str(e))
+   
+@app.post(f"{API_PREFIX}/logout")
+def start_server():
+    try:
+        # Get the absolute path to the script
+        script_path = os.path.abspath("./start_server.sh")
+        print(script_path)
+        # Make sure the script is executable
+        os.chmod(script_path, 0o755)
+        
+        # Execute the bash script
+        result = subprocess.run(
+            ["bash", script_path], 
+            capture_output=True, 
+            text=True, 
+            check=True
+        )
+        
+        return {
+            "status": "success",
+            "message": "Server started successfully",
+            "output": result.stdout
+        }
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(status_code=500, detail=f"Script execution failed: {e.stderr}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
 
 # This catch-all route should be at the very end
 @app.get("/{full_path:path}")
