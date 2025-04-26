@@ -14,8 +14,6 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {},
     throw new Error('No session token found');
   }
   
-  console.log(`Making request to ${apiLink}${endpoint} with token: ${sessionToken.substring(0, 8)}... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
-  
   // Create headers with session token
   const headers = {
     ...options.headers,
@@ -37,10 +35,7 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {},
       mode: 'cors'
     });
     
-    console.log(`Response from ${endpoint}: ${response.status}`);
-    
     if (response.status === 401 && retryCount < MAX_RETRIES - 1) {
-      console.log(`Retrying request after ${RETRY_DELAY}ms...`);
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       return fetchWithAuth(endpoint, options, retryCount + 1);
     }

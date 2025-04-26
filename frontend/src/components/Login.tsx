@@ -26,8 +26,6 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
     const controller = new AbortController();
     
     try {
-      console.log("Attempting to login to:", `${apiLink}/login`);
-      
       // First login
       const response = await fetch(`${apiLink}/login`, {
         method: 'POST',
@@ -44,7 +42,6 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
       });
       
       const data = await response.json();
-      console.log("Login response:", data);
       
       if (!response.ok) {
         throw new Error(`Login failed: ${response.status} ${JSON.stringify(data)}`);
@@ -57,7 +54,6 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
       // Store the session token
       localStorage.setItem("log in", "true");
       localStorage.setItem("session_token", data.session_token);
-      console.log("Session token stored:", data.session_token);
       
       // Wait for a small delay to ensure localStorage is updated
       await new Promise(resolve => setTimeout(resolve, 100));

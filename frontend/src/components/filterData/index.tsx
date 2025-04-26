@@ -56,7 +56,6 @@ export default async function getMissingAssignments({setAssignments, setError, c
           console.error("current classes not found found");
           return;
       }
-      console.log("Current Classes",currentClasses);
       try {
           const missing_assignment: missing_assignment[] | null = await getMissingAssignmentsHelper({setError, controller, currentClasses});
           setAssignments(missing_assignment);
