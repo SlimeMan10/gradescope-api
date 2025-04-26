@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import apiLink from './apiLink';
 
-interface MissingAssignment {
-  assignment_name: string;
-  course_name: string;
-  due_date: Date;
-  late_due_date: Date;
-}
-
 interface LogInProps {
   onLoginSuccess: () => void;
 }

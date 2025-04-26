@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface MissingAssignment {
   assignment_name: string;
   course_name: string;
