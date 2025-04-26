@@ -221,20 +221,33 @@ def get_course_users(course_id: str, user_data: dict = Depends(get_current_user_
 
 
 @app.post(f"{API_PREFIX}/assignments", response_model=list[Assignment])
-def get_assignments(course_id: str, user_data: dict = Depends(get_current_user_data)):
-   """Get all assignments for a course. ONLY FOR INSTRUCTORS.
-       list: list of user emails
+def get_assignments(course_id: str = None, user_data: dict = Depends(get_current_user_data)):
+   """Get all assignments for a course.
+   
+   Args:
+       course_id (str): The ID of the course (passed as query parameter)
+       user_data (dict): User session data from dependency
+
+   Returns:
+       list: list of Assignment objects
 
    Raises:
-       HTTPException: If the request to get course users fails, with a 500 Internal Server Error status code and the error message.
+       HTTPException: If the request to get assignments fails, with a 500 Internal Server Error status code and the error message.
+       HTTPException: If course_id is missing, with a 422 Unprocessable Entity status code.
    """
+   if not course_id:
+       raise HTTPException(
+           status_code=422,
+           detail="course_id is required as a query parameter"
+       )
+   
    try:
        account = get_account_from_user_data(user_data)
-       course_users = account.get_assignments(course_id)
-       return course_users
+       assignments = account.get_assignments(course_id)
+       return assignments
    except RuntimeError as e:
        raise HTTPException(
-           status_code=500, detail=f"Failed to get course users. Error {e}"
+           status_code=500, detail=f"Failed to get assignments. Error {e}"
        )
 
 

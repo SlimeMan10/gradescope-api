@@ -116,9 +116,8 @@ async function getMissingAssignmentsHelper({setError, controller, currentClasses
       const assignmentPromises = currentClasses.map(async (curr_class) => {
         try {
           // Use fetchWithAuth instead of fetch
-          const response = await fetchWithAuth(`/assignments`, {
+          const response = await fetchWithAuth(`/assignments?course_id=${curr_class.id}`, {
             method: 'POST',
-            body: JSON.stringify({course_id: curr_class.id}),
             signal: controller.signal,
           });
           
