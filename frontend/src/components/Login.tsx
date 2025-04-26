@@ -38,7 +38,9 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
           email,
           password
         }),
-        signal: controller.signal
+        signal: controller.signal,
+        credentials: 'include',
+        mode: 'cors'
       });
       
       const data = await response.json();

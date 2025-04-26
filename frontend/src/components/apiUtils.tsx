@@ -13,15 +13,12 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
   
   console.log(`Making request to ${apiLink}${endpoint} with token: ${sessionToken.substring(0, 8)}...`);
   
-  // Create headers with all possible token formats
+  // Create headers with session token
   const headers = {
     ...options.headers,
     'Content-Type': 'application/json',
-    'session_token': sessionToken,         // underscore format
-    'session-token': sessionToken,         // hyphen format
-    'sessiontoken': sessionToken,          // no separator
-    'Session-Token': sessionToken,         // capitalized
-    'Authorization': `Bearer ${sessionToken}` // Bearer format
+    'Authorization': `Bearer ${sessionToken}`,
+    'session_token': sessionToken
   };
   
   // Construct the full URL
@@ -33,6 +30,8 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     const response = await fetch(url, {
       ...options,
       headers,
+      credentials: 'include',
+      mode: 'cors'
     });
     
     console.log(`Response from ${endpoint}: ${response.status}`);
