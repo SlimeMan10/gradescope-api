@@ -1,24 +1,27 @@
+// apiUtils.ts
 import apiLink from './apiLink';
 
-// Helper function to make authenticated API requests
 export async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const sessionToken = localStorage.getItem('session_token');
   
   if (!sessionToken) {
-    console.error("No session token found in localStorage");
+    console.error("No session token found");
     localStorage.removeItem('log in');
     window.location.reload();
     throw new Error('No session token found');
   }
   
-  console.log(`Making authenticated request to: ${apiLink}${endpoint}`);
+  console.log(`Making request to ${apiLink}${endpoint} with token: ${sessionToken.substring(0, 8)}...`);
   
-  // Add session token to headers
+  // Create headers with all possible token formats
   const headers = {
     ...options.headers,
     'Content-Type': 'application/json',
-    'session-token': sessionToken, // Use kebab-case header name
-    'Session-Token': sessionToken  // Try alternative casing as backup
+    'session_token': sessionToken,         // underscore format
+    'session-token': sessionToken,         // hyphen format
+    'sessiontoken': sessionToken,          // no separator
+    'Session-Token': sessionToken,         // capitalized
+    'Authorization': `Bearer ${sessionToken}` // Bearer format
   };
   
   // Construct the full URL
@@ -27,18 +30,15 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     : `${apiLink}/${endpoint}`;
   
   try {
-    // Make the request with updated headers
     const response = await fetch(url, {
       ...options,
       headers,
     });
     
-    // Log the response status
-    console.log(`API Response: ${response.status} for ${url}`);
+    console.log(`Response from ${endpoint}: ${response.status}`);
     
-    // Handle 401 errors (invalid or expired session)
     if (response.status === 401) {
-      console.error("Session expired or invalid");
+      console.error("Unauthorized access - token might be invalid");
       localStorage.removeItem('log in');
       localStorage.removeItem('session_token');
       window.location.reload();
@@ -47,7 +47,7 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     
     return response;
   } catch (error) {
-    console.error(`Request failed for ${url}:`, error);
+    console.error(`Request failed:`, error);
     throw error;
   }
 }

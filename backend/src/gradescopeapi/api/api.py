@@ -82,13 +82,29 @@ async def cleanup_expired_sessions():
         await asyncio.sleep(60)
 
 # Dependency to get the current user's data
-def get_current_user_data(session_token: str = Header(..., description="Session token from login")):
-    if session_token not in user_sessions:
+def get_current_user_data(
+    session_token: str = Header(None, description="Session token from login"),
+    authorization: str = Header(None, description="Bearer token")
+):
+    # Try to get token from different possible sources
+    token = None
+    
+    # Check session_token header (direct)
+    if session_token:
+        token = session_token
+    # Check Authorization header (Bearer format)
+    elif authorization and authorization.startswith("Bearer "):
+        token = authorization.replace("Bearer ", "")
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Invalid or missing session token")
+    
+    if token not in user_sessions:
         raise HTTPException(status_code=401, detail="Invalid or expired session")
     
     # Update last active timestamp
-    user_sessions[session_token]["last_active"] = datetime.now()
-    return user_sessions[session_token]
+    user_sessions[token]["last_active"] = datetime.now()
+    return user_sessions[token]
 
 # Helper to get connection from user data
 def get_connection_from_user_data(user_data: dict):
