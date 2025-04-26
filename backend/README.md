@@ -60,11 +60,14 @@ uvicorn gradescopeapi.api.api:app --reload
 1. In a web browser, navigate to `localhost:8000/docs`, to see the auto-generated FastAPI docs
 
 Windows
-1. run: py -m venv venv
-1. run: \venv\Scripts\Activate.ps1
-1. run: pip install gradescopeapi fastapi uvicorn
-1. run in backend directory: pip install -e .
-1. run in backend directory: uvicorn gradescopeapi.api.api:app --reload
+```
+cd backend
+py -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install gradescopeapi fastapi uvicorn
+pip install -e .
+uvicorn gradescopeapi.api.api:app --reload
+```
 1. In a web browser, navigate to `localhost:8000/docs`, to see the auto-generated FastAPI docs
 
 

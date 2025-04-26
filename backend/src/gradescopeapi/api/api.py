@@ -22,7 +22,7 @@ app = FastAPI()
 # API endpoint prefix
 API_PREFIX = "/api"
 
-# Add CORS middleware - ONLY ONCE
+# Add CORS middleware - ONLY ONCe
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],  # Add your frontend URL here
