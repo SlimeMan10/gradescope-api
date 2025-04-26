@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://gradescope-api-5.onrender.com',
+        target: 'https://gradescope-api.onrender.com',
         changeOrigin: true,
       }
     }
