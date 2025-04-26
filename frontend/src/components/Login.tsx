@@ -90,6 +90,11 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
       >
           <h1 className="text-2xl font-semibold text-center text-purple-800 mb-6 animate-slideDown">Log Into Gradescope</h1>
           
+          <div className="mb-6 p-4 bg-blue-50 text-blue-700 rounded-md text-sm animate-fadeIn">
+            <p className="font-medium mb-2">Important:</p>
+            <p>You must have a Gradescope account that you can log into directly (without using "Log in with School Credentials" or "Log in with Google").</p>
+          </div>
+          
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm animate-shake" role="alert" aria-live="assertive">
               {error}
