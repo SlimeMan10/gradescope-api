@@ -28,7 +28,7 @@ API_PREFIX = "/api"
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://gradescope-api.vercel.app",  # Production frontend
+        "https://gradescope-assignment.vercel.app/",  # Production frontend
         "http://localhost:3000",              # Local development
         "http://localhost:5173"               # Vite default port
     ],
