@@ -19,7 +19,8 @@ export default function MissingAssignmentDisplay() {
   // Check login status on mount and when localStorage changes
   useEffect(() => {
     const checkLoginStatus = () => {
-      const loginStatus = localStorage.getItem('log in') === 'true';
+      const loginStatus = localStorage.getItem('log in') === 'true' && 
+                         localStorage.getItem('session_token') !== null;
       setIsLoggedIn(loginStatus);
     };
     
@@ -29,9 +30,13 @@ export default function MissingAssignmentDisplay() {
     // Add event listener for localStorage changes
     window.addEventListener('storage', checkLoginStatus);
     
+    // Add event listener for custom login event
+    window.addEventListener('loginStatusChanged', checkLoginStatus);
+    
     // Clean up
     return () => {
       window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener('loginStatusChanged', checkLoginStatus);
     };
   }, []);
 

@@ -44,11 +44,13 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(`Login failed: ${response.status} ${JSON.stringify(data)}`);
+        // Extract the actual error message from the response
+        const errorMessage = data.detail || data.message || `Login failed: ${response.status}`;
+        throw new Error(errorMessage);
       }
       
       if (data.status_code !== 200 || data.message !== 'Login successful') {
-        throw new Error("Invalid login response");
+        throw new Error(data.detail || "Invalid login response");
       }
       
       // Store the session token
@@ -57,6 +59,9 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
       
       // Wait for a small delay to ensure localStorage is updated
       await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Dispatch a custom event to notify other components about the login
+      window.dispatchEvent(new Event('loginStatusChanged'));
       
       onLoginSuccess(); // Call the callback function when login is successful
     } catch (error) {
