@@ -1,4 +1,4 @@
-import apiLink from '../apiLink.tsx';
+import { fetchWithAuth } from '../apiUtils';
 
 interface coursesapiLinkReturn {
     teacher: Record<string, courseData>;
@@ -68,11 +68,12 @@ export default async function getMissingAssignments({setAssignments, setError, c
 
 async function getAllClasses({setError, controller}: { setError: (error: any) => void; controller: AbortController }): Promise<Record<string, courseData> | undefined> {
     try {
-        const response: Response = await fetch(apiLink + "/courses", {
+        // Use fetchWithAuth instead of fetch
+        const response = await fetchWithAuth("/courses", {
             method: "POST",
-            body: JSON.stringify({}),
             signal: controller.signal,
         });
+        
         if (!response.ok) {
             throw Error("Error Fetching Classes");
         }
@@ -114,8 +115,10 @@ async function getMissingAssignmentsHelper({setError, controller, currentClasses
       // Create an array of promises for all fetch requests
       const assignmentPromises = currentClasses.map(async (curr_class) => {
         try {
-          const response: Response = await fetch(apiLink + '/assignments?course_id=' + curr_class.id, {
+          // Use fetchWithAuth instead of fetch
+          const response = await fetchWithAuth(`/assignments`, {
             method: 'POST',
+            body: JSON.stringify({course_id: curr_class.id}),
             signal: controller.signal,
           });
           

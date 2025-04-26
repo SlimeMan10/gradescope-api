@@ -1,5 +1,7 @@
 from datetime import datetime
-from fastapi import Depends, FastAPI, HTTPException, status
+import asyncio
+import uuid
+from fastapi import Depends, FastAPI, HTTPException, status, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -45,9 +47,8 @@ os.makedirs(static_dir, exist_ok=True)
 # Mount static files with absolute path - ONLY ONCE
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-# Create instance of GSConnection - ONLY ONCE
-connection = GSConnection()
-account = None
+# User sessions storage - replaces the global connection and account
+user_sessions = {}
 
 # Get path to React build directory
 project_root = os.path.abspath(os.path.join(current_dir, ".."))
@@ -62,44 +63,44 @@ if os.path.exists(frontend_build_dir):
 def read_root():
    return FileResponse(os.path.join(static_dir, "index.html"))
 
-def get_gs_connection():
-   """
-   Returns the GSConnection instance
+# Session cleanup background task
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(cleanup_expired_sessions())
 
-   Returns:
-       connection (GSConnection): an instance of the GSConnection class,
-           containing the session object used to make HTTP requests,
-           a boolean defining True/False if the user is logged in, and
-           the user's Account object.
-   """
-   return connection
+async def cleanup_expired_sessions():
+    while True:
+        now = datetime.now()
+        # Remove sessions inactive for more than 30 minutes
+        expired = [token for token, data in user_sessions.items() 
+                  if (now - data["last_active"]).seconds > 1800]
+        
+        for token in expired:
+            del user_sessions[token]
+        
+        # Check every minute
+        await asyncio.sleep(60)
 
+# Dependency to get the current user's data
+def get_current_user_data(session_token: str = Header(..., description="Session token from login")):
+    if session_token not in user_sessions:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Update last active timestamp
+    user_sessions[session_token]["last_active"] = datetime.now()
+    return user_sessions[session_token]
 
-def get_gs_connection_session():
-   """
-   Returns session of the the GSConnection instance
+# Helper to get connection from user data
+def get_connection_from_user_data(user_data: dict):
+    return user_data["connection"]
 
-   Returns:
-       connection.session (GSConnection.session): an instance of the GSConnection class' session object used to make HTTP requests
-   """
-   return connection.session
-
-
-def get_account():
-   """
-   Returns the user's Account object
-
-   Returns:
-       Account (Account): an instance of the Account class, containing
-           methods for interacting with the user's courses and assignments.
-   """
-   return Account(session=get_gs_connection_session)
-
+# Helper to get account from user data
+def get_account_from_user_data(user_data: dict):
+    return user_data["account"]
 
 @app.post(f"{API_PREFIX}/login", name="login")
 def login(
    login_data: LoginRequestModel,
-   gs_connection: GSConnection = Depends(get_gs_connection),
 ):
    """Login to Gradescope, with correct credentials
 
@@ -114,16 +115,52 @@ def login(
    password = login_data.password
 
    try:
-       connection.login(user_email, password)
-       global account
-       account = connection.account
-       return {"message": "Login successful", "status_code": status.HTTP_200_OK}
+       # Create a new connection for this login
+       user_connection = GSConnection()
+       user_connection.login(user_email, password)
+       
+       # Generate a unique session token
+       session_token = str(uuid.uuid4())
+       
+       # Store the connection in the sessions dictionary
+       user_sessions[session_token] = {
+           "connection": user_connection,
+           "account": user_connection.account,
+           "last_active": datetime.now(),
+           "email": user_email
+       }
+       
+       return {
+           "message": "Login successful", 
+           "status_code": status.HTTP_200_OK,
+           "session_token": session_token
+       }
    except ValueError as e:
        raise HTTPException(status_code=404, detail=f"Account not found. Error {e}")
 
 
+@app.post(f"{API_PREFIX}/logout")
+def logout(user_data: dict = Depends(get_current_user_data)):
+    """Logout from Gradescope
+
+    Removes the user's session from the server
+
+    Returns:
+        dict: Message indicating success
+    """
+    # Get the session token from headers
+    session_token = next((k for k, v in user_sessions.items() if v == user_data), None)
+    if session_token:
+        del user_sessions[session_token]
+    
+    return {
+        "message": "Logout successful",
+        "status_code": status.HTTP_200_OK
+    }
+
+
 @app.post(f"{API_PREFIX}/courses", response_model=dict[str, dict[str, Course]])
-def get_courses():
+def get_courses(user_data: dict = Depends(get_current_user_data)):
    """Get all courses for the user
 
    Args:
@@ -136,6 +173,7 @@ def get_courses():
        HTTPException: If the request to get courses fails, with a 500 Internal Server Error status code and the error message.
    """
    try:
+       account = get_account_from_user_data(user_data)
        course_list = account.get_courses()
        return course_list
    except RuntimeError as e:
@@ -143,7 +181,7 @@ def get_courses():
 
 
 @app.post(f"{API_PREFIX}/course_users", response_model=list[Member])
-def get_course_users(course_id: str):
+def get_course_users(course_id: str, user_data: dict = Depends(get_current_user_data)):
    """Get all users for a course. ONLY FOR INSTRUCTORS.
 
    Args:
@@ -156,7 +194,8 @@ def get_course_users(course_id: str):
        HTTPException: If the request to get courses fails, with a 500 Internal Server Error status code and the error message.
    """
    try:
-       course_list = connection.account.get_course_users(course_id)
+       account = get_account_from_user_data(user_data)
+       course_list = account.get_course_users(course_id)
        print(course_list)
        return course_list
    except RuntimeError as e:
@@ -164,7 +203,7 @@ def get_course_users(course_id: str):
 
 
 @app.post(f"{API_PREFIX}/assignments", response_model=list[Assignment])
-def get_assignments(course_id: str):
+def get_assignments(course_id: str, user_data: dict = Depends(get_current_user_data)):
    """Get all assignments for a course. ONLY FOR INSTRUCTORS.
        list: list of user emails
 
@@ -172,7 +211,8 @@ def get_assignments(course_id: str):
        HTTPException: If the request to get course users fails, with a 500 Internal Server Error status code and the error message.
    """
    try:
-       course_users = connection.account.get_assignments(course_id)
+       account = get_account_from_user_data(user_data)
+       course_users = account.get_assignments(course_id)
        return course_users
    except RuntimeError as e:
        raise HTTPException(
@@ -184,6 +224,7 @@ def get_assignments(course_id: str):
 def get_assignment_submissions(
    course_id: str,
    assignment_id: str,
+   user_data: dict = Depends(get_current_user_data)
 ):
    """Get all assignment submissions for an assignment. ONLY FOR INSTRUCTORS.
 
@@ -198,7 +239,8 @@ def get_assignment_submissions(
        HTTPException: If the request to get assignments fails, with a 500 Internal Server Error status code and the error message.
    """
    try:
-       assignment_list = connection.account.get_assignment_submissions(
+       account = get_account_from_user_data(user_data)
+       assignment_list = account.get_assignment_submissions(
            course_id=course_id, assignment_id=assignment_id
        )
        return assignment_list
@@ -210,7 +252,8 @@ def get_assignment_submissions(
 
 @app.post(f"{API_PREFIX}/single_assignment_submission", response_model=list[str])
 def get_student_assignment_submission(
-   student_email: str, course_id: str, assignment_id: str
+   student_email: str, course_id: str, assignment_id: str,
+   user_data: dict = Depends(get_current_user_data)
 ):
    """Get a student's assignment submission. ONLY FOR INSTRUCTORS.
 
@@ -226,7 +269,8 @@ def get_student_assignment_submission(
        HTTPException: If the request to get assignment submissions fails, with a 500 Internal Server Error status code and the error message.
    """
    try:
-       assignment_submissions = connection.account.get_assignment_submission(
+       account = get_account_from_user_data(user_data)
+       assignment_submissions = account.get_assignment_submission(
            student_email=student_email,
            course_id=course_id,
            assignment_id=assignment_id,
@@ -245,6 +289,7 @@ def update_assignment_dates(
    release_date: datetime,
    due_date: datetime,
    late_due_date: datetime,
+   user_data: dict = Depends(get_current_user_data)
 ):
    """
    Update the release and due dates for an assignment. ONLY FOR INSTRUCTORS.
@@ -268,6 +313,7 @@ def update_assignment_dates(
    """
    try:
        print(f"late due date {late_due_date}")
+       connection = get_connection_from_user_data(user_data)
        success = update_assignment_date(
            session=connection.session,
            course_id=course_id,
@@ -290,7 +336,11 @@ def update_assignment_dates(
 
 
 @app.post(f"{API_PREFIX}/assignments/extensions", response_model=dict)
-def get_assignment_extensions(course_id: str, assignment_id: str):
+def get_assignment_extensions(
+    course_id: str, 
+    assignment_id: str,
+    user_data: dict = Depends(get_current_user_data)
+):
    """
    Get all extensions for an assignment.
 
@@ -305,6 +355,7 @@ def get_assignment_extensions(course_id: str, assignment_id: str):
        HTTPException: If the request to get extensions fails, with a 500 Internal Server Error status code and the error message.
    """
    try:
+       connection = get_connection_from_user_data(user_data)
        extensions = get_extensions(
            session=connection.session,
            course_id=course_id,
@@ -323,6 +374,7 @@ def update_extension(
    release_date: datetime,
    due_date: datetime,
    late_due_date: datetime,
+   user_data: dict = Depends(get_current_user_data)
 ):
    """
    Update the extension for a student on an assignment. ONLY FOR INSTRUCTORS.
@@ -344,6 +396,7 @@ def update_extension(
        HTTPException: If any other exception occurs, with a 500 Internal Server Error status code and the error message.
    """
    try:
+       connection = get_connection_from_user_data(user_data)
        success = update_student_extension(
            session=connection.session,
            course_id=course_id,
@@ -368,7 +421,11 @@ def update_extension(
 
 @app.post(f"{API_PREFIX}/assignments/upload")
 def upload_assignment_files(
-   course_id: str, assignment_id: str, leaderboard_name: str, file: FileUploadModel
+   course_id: str, 
+   assignment_id: str, 
+   leaderboard_name: str, 
+   file: FileUploadModel,
+   user_data: dict = Depends(get_current_user_data)
 ):
    """
    Upload files for an assignment.
@@ -392,6 +449,7 @@ def upload_assignment_files(
        HTTPException: If any other exception occurs, with a 500 Internal Server Error status code and the error message.
    """
    try:
+       connection = get_connection_from_user_data(user_data)
        submission_link = upload_assignment(
            session=connection.session,
            course_id=course_id,

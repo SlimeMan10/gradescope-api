@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import getMissingAssignments from './filterData/index';
 import Cards from './Cards';
+import LogoutButton from './LogoutButton';
 
 interface MissingAssignment {
   assignment_name: string;
@@ -64,11 +65,11 @@ export default function MissingAssignmentDisplay() {
     return null; // Don't render anything if not logged in
   }
 
-
   return (
-    <div className="bg-white min-h-screen p-6" role="main" aria-label="Missing assignments dashboard">
+    <div className="bg-white min-h-screen p-6 relative" role="main" aria-label="Missing assignments dashboard">
+      <LogoutButton />
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-shadow-black mb-6 animate-slideDown">All Missing Assignments</h1>
+        <h1 className="text-3xl font-bold text-purple-800 mb-6 animate-slideDown">All Missing Assignments</h1>
         
         {loading ? (
           <div className="flex justify-center items-center h-40" role="status" aria-live="polite">

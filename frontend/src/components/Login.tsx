@@ -51,7 +51,10 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
         throw new Error("Invalid login response");
       }
       
+      // Store the session token
       localStorage.setItem("log in", "true");
+      localStorage.setItem("session_token", data.session_token);
+      
       onLoginSuccess(); // Call the callback function when login is successful
     } catch (error) {
       console.error("Login error:", error);

@@ -8,7 +8,8 @@ function App() {
   // Check login status on mount and when localStorage changes
   useEffect(() => {
     const checkLoginStatus = () => {
-      const loginStatus = localStorage.getItem('log in') === 'true';
+      const loginStatus = localStorage.getItem('log in') === 'true' && 
+                          localStorage.getItem('session_token') !== null;
       setIsLoggedIn(loginStatus);
     };
     
@@ -17,7 +18,7 @@ function App() {
     
     // Set up storage event listener
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'log in') {
+      if (e.key === 'log in' || e.key === 'session_token') {
         checkLoginStatus();
       }
     };
