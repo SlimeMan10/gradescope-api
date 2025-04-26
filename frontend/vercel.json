@@ -1,7 +1,7 @@
 {
     "framework": "create-react-app",
     "buildCommand": "npm run build",
-    "outputDirectory": "build",
+    "outputDirectory": "dist",
     "routes": [
       { "handle": "filesystem" },
       { "src": "/(.*)", "dest": "/index.html" }
