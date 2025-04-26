@@ -1,4 +1,4 @@
-// apiUtils.ts
+// apiUtils.ts - Simplified version
 import apiLink from './apiLink';
 
 // Helper function to make authenticated API requests
@@ -16,8 +16,13 @@ export async function fetchWithAuth(endpoint: string, options: RequestInit = {})
     'Content-Type': 'application/json'
   };
   
+  // Construct the full URL
+  const url = endpoint.startsWith('/') 
+    ? `${apiLink}${endpoint}` 
+    : `${apiLink}/${endpoint}`;
+  
   // Make the request with updated headers
-  const response = await fetch(`${apiLink}${endpoint}`, {
+  const response = await fetch(url, {
     ...options,
     headers,
   });
