@@ -8,14 +8,16 @@ interface LogInProps {
 export default function LogIn({ onLoginSuccess }: LogInProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [show2FA, setShow2FA] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const email = (document.getElementById('email') as HTMLFormElement)?.value;
-    const password = (document.getElementById('password') as HTMLFormElement)?.value;
+    const twoFactorCode = show2FA ? (document.getElementById('2fa') as HTMLFormElement)?.value : undefined;
     
     if (!email || !password) {
       setError("Missing email or password");
@@ -34,7 +36,8 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
         },
         body: JSON.stringify({
           email,
-          password
+          password,
+          two_factor_code: twoFactorCode
         }),
         signal: controller.signal,
         credentials: 'include',
@@ -46,24 +49,27 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
       if (!response.ok) {
         // Extract the actual error message from the response
         const errorMessage = data.detail || data.message || `Login failed: ${response.status}`;
-        throw new Error(errorMessage);
-      }
-      
-      if (data.status_code !== 200 || data.message !== 'Login successful') {
+        if (errorMessage.includes("2FA is required")) {
+          setShow2FA(true);
+          setError("Please enter your 2FA code");
+        } else {
+          throw new Error(errorMessage);
+        }
+      } else if (data.status_code !== 200 || data.message !== 'Login successful') {
         throw new Error(data.detail || "Invalid login response");
+      } else {
+        // Store the session token
+        localStorage.setItem("log in", "true");
+        localStorage.setItem("session_token", data.session_token);
+        
+        // Wait for a small delay to ensure localStorage is updated
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Dispatch a custom event to notify other components about the login
+        window.dispatchEvent(new Event('loginStatusChanged'));
+        
+        onLoginSuccess(); // Call the callback function when login is successful
       }
-      
-      // Store the session token
-      localStorage.setItem("log in", "true");
-      localStorage.setItem("session_token", data.session_token);
-      
-      // Wait for a small delay to ensure localStorage is updated
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Dispatch a custom event to notify other components about the login
-      window.dispatchEvent(new Event('loginStatusChanged'));
-      
-      onLoginSuccess(); // Call the callback function when login is successful
     } catch (error) {
       console.error("Login error:", error);
       if (error instanceof Error) {
@@ -98,6 +104,8 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
               <input 
                 type="email" 
                 id="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus-accessible focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
                 placeholder="Enter your email"
                 aria-required="true"
@@ -113,6 +121,8 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
               <input 
                 type="password" 
                 id="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus-accessible focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
                 placeholder="Enter your password"
                 aria-required="true"
@@ -120,6 +130,23 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
               />
               <div id="password-help" className="text-xs text-gray-500">Enter your Gradescope account password</div>
             </div>
+            
+            {show2FA && (
+              <div className="space-y-2 animate-slideUp" style={{animationDelay: '250ms'}}>
+                <label htmlFor="2fa" className="block text-sm font-medium text-gray-700">
+                  Two-Factor Authentication Code
+                </label>
+                <input 
+                  type="text" 
+                  id="2fa" 
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus-accessible focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300"
+                  placeholder="Enter your 2FA code"
+                  aria-required="true"
+                  aria-describedby="2fa-help"
+                />
+                <div id="2fa-help" className="text-xs text-gray-500">Enter the code from your authenticator app</div>
+              </div>
+            )}
             
             <button
               type="submit"

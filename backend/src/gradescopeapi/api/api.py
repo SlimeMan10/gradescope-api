@@ -125,17 +125,19 @@ def login(
    Args:
        username (str): email address of user attempting to log in
        password (str): password of user attempting to log in
+       two_factor_code (str, optional): 2FA code if required
 
    Raises:
        HTTPException: If the request to login fails, with a 404 Unauthorized Error status code and the error message "Account not found".
    """
    user_email = login_data.email
    password = login_data.password
+   two_factor_code = login_data.two_factor_code
 
    try:
        # Create a new connection for this login
        user_connection = GSConnection()
-       user_connection.login(user_email, password)
+       user_connection.login(user_email, password, two_factor_code)
        
        # Generate a unique session token
        session_token = str(uuid.uuid4())
@@ -154,7 +156,7 @@ def login(
            "session_token": session_token
        }
    except ValueError as e:
-       raise HTTPException(status_code=404, detail=f"Account not found. Error {e}")
+       raise HTTPException(status_code=404, detail=str(e))
 
 
 @app.post(f"{API_PREFIX}/logout")

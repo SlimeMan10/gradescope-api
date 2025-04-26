@@ -16,6 +16,7 @@ class UserSession(BaseModel):
 class LoginRequestModel(BaseModel):
     email: str
     password: str
+    two_factor_code: str | None = None
 
 
 class CourseID(BaseModel):
