@@ -25,7 +25,11 @@ API_PREFIX = "/api"
 # Add CORS middleware - ONLY ONCe
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://gradescope-assignments.vercel.app/"],  # Add your frontend URL here
+    allow_origins=[
+        "https://gradescope-api.vercel.app",  # Production frontend
+        "http://localhost:3000",              # Local development
+        "http://localhost:5173"               # Vite default port
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
