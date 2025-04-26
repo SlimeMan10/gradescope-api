@@ -59,7 +59,6 @@ export default async function getMissingAssignments({setAssignments, setError, c
       console.log("Current Classes",currentClasses);
       try {
           const missing_assignment: missing_assignment[] | null = await getMissingAssignmentsHelper({setError, controller, currentClasses});
-          console.log("Missing Assignments", missing_assignment);
           setAssignments(missing_assignment);
       } catch (error) {
           // taken care of in the helper
@@ -78,8 +77,6 @@ async function getAllClasses({setError, controller}: { setError: (error: any) =>
             throw Error("Error Fetching Classes");
         }
         const data: coursesapiLinkReturn = await response.json();
-        console.log(data);
-        console.log(data.student);
         const studentData: Record<string, courseData> | undefined = data.student;
         return studentData;
     } catch (error: Error | unknown) {

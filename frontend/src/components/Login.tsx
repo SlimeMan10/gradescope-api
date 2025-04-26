@@ -27,7 +27,6 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
     
     try {
       // First login
-      console.log("Attempting to login with:", { email });
       const response = await fetch(`${apiLink}/login`, {
         method: 'POST',
         headers: {
@@ -47,7 +46,6 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
       }
       
       const data = await response.json();
-      console.log("Login response:", data);
       
       if (data.status_code !== 200 || data.message !== 'Login successful') {
         throw new Error("Invalid login response");
