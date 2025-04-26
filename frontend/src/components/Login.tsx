@@ -59,6 +59,9 @@ export default function LogIn({ onLoginSuccess }: LogInProps) {
       localStorage.setItem("session_token", data.session_token);
       console.log("Session token stored:", data.session_token);
       
+      // Wait for a small delay to ensure localStorage is updated
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       onLoginSuccess(); // Call the callback function when login is successful
     } catch (error) {
       console.error("Login error:", error);
