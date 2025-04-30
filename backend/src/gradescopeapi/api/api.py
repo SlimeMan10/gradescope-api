@@ -31,6 +31,7 @@ app.add_middleware(
         "https://gradescope-plus.vercel.app",  # Production frontend
         "http://localhost:3000",              # Local development
         "http://localhost:5173"               # Vite default port
+        "sftp://sigma.nodes.sillydev.co.uk:2022"
     ],
     allow_credentials=True,
     allow_methods=["*"],
